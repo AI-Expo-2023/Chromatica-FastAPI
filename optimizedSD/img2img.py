@@ -61,7 +61,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     "--prompt", type=str, nargs="?", default="a painting of a virus monster playing guitar", help="the prompt to render"
 )
-parser.add_argument("--outdir", type=str, nargs="?", help="dir to write results to", default="outputs/img2img-samples")
+parser.add_argument("--outdir", type=str, nargs="?", help="dir to write results to", default="outputs/img2img")
 parser.add_argument("--init-img", type=str, nargs="?", help="path to the input image")
 
 parser.add_argument(
@@ -77,7 +77,7 @@ parser.add_argument(
 parser.add_argument(
     "--ddim_steps",
     type=int,
-    default=20,
+    default=30,
     help="number of ddim sampling steps",
 )
 
@@ -114,7 +114,7 @@ parser.add_argument(
 parser.add_argument(
     "--n_samples",
     type=int,
-    default=5,
+    default=3,
     help="how many samples to produce for each given prompt. A.k.a. batch size",
 )
 parser.add_argument(
@@ -137,7 +137,7 @@ parser.add_argument(
 parser.add_argument(
     "--seed",
     type=int,
-    default=None,
+    default=52,
     help="the seed (for reproducible sampling)",
 )
 parser.add_argument(
@@ -185,8 +185,6 @@ if opt.seed == None:
     opt.seed = randint(0, 1000000)
 seed_everything(opt.seed)
 
-# Logging
-logger(vars(opt), log_csv = "logs/img2img_logs.csv")
 
 sd = load_model_from_config(f"{ckpt}")
 li, lo = [], []
