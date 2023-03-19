@@ -1,11 +1,3 @@
-"""
-wild mixture of
-https://github.com/lucidrains/denoising-diffusion-pytorch/blob/7706bdfc6f527f58d33f84b7b522e61e6e3164b3/denoising_diffusion_pytorch/denoising_diffusion_pytorch.py
-https://github.com/openai/improved-diffusion/blob/e94489283bb876ac1477d5dd7709bbbd2d9902ce/improved_diffusion/gaussian_diffusion.py
-https://github.com/CompVis/taming-transformers
--- merci
-"""
-
 import time, math
 from tqdm.auto import trange, tqdm
 import torch
@@ -25,13 +17,10 @@ from ldm.modules.diffusionmodules.util import make_beta_schedule, extract_into_t
 from samplers import CompVisDenoiser, get_ancestral_step, to_d, append_dims,linear_multistep_coeff
 
 def disabled_train(self):
-    """Overwrite model.train with this function to make sure train/eval mode
-    does not change anymore."""
     return self
 
 
 class DDPM(pl.LightningModule):
-    # classic DDPM with Gaussian diffusion, in image space
     def __init__(self,
                  timesteps=1000,
                  beta_schedule="linear",
@@ -50,10 +39,10 @@ class DDPM(pl.LightningModule):
                  cosine_s=8e-3,
                  given_betas=None,
                  original_elbo_weight=0.,
-                 v_posterior=0.,  # weight for choosing posterior variance as sigma = (1-v) * beta_tilde + v * beta
+                 v_posterior=0.,
                  l_simple_weight=1.,
                  conditioning_key=None,
-                 parameterization="eps",  # all assuming fixed variance schedules
+                 parameterization="eps",
                  scheduler_config=None,
                  use_positional_encodings=False,
                  ):
@@ -65,7 +54,7 @@ class DDPM(pl.LightningModule):
         self.clip_denoised = clip_denoised
         self.log_every_t = log_every_t
         self.first_stage_key = first_stage_key
-        self.image_size = image_size  # try conv?
+        self.image_size = image_size
         self.channels = channels
         self.use_positional_encodings = use_positional_encodings
         self.use_scheduler = scheduler_config is not None
