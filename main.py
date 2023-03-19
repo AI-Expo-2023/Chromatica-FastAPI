@@ -17,7 +17,7 @@ app = FastAPI()
 
 @app.get('/')
 def test():
-    return {'test':356}
+    return {'test':1234567890}
 
 @app.post('/test/')
 def post_test(item: Item):
