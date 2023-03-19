@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import Union
 import uvicorn
 
+
 class Item(BaseModel):
     prompt: str
     W: Union[int, None] = None
@@ -21,7 +22,6 @@ def test():
 @app.post('/test/')
 def post_test(item: Item):
     return item
-
 
 
 if __name__ == '__main__':
