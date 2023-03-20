@@ -75,7 +75,7 @@ parser.add_argument(
     help="do not save individual samples. For speed measurements.",
 )
 parser.add_argument(
-    "--ddim_steps",
+    "--ddim_steps", # 이미지 steps
     type=int,
     default=30,
     help="number of ddim sampling steps",
@@ -94,13 +94,13 @@ parser.add_argument(
     help="sample this often",
 )
 parser.add_argument(
-    "--H",
+    "--H", # 이미지 높이
     type=int,
     default=None,
     help="image height, in pixel space",
 )
 parser.add_argument(
-    "--W",
+    "--W", # 이미지 너비
     type=int,
     default=None,
     help="image width, in pixel space",
@@ -112,7 +112,7 @@ parser.add_argument(
     help="strength for noising/unnoising. 1.0 corresponds to full destruction of information in init image",
 )
 parser.add_argument(
-    "--n_samples",
+    "--n_samples", # 이미지 샘플 갯수
     type=int,
     default=3,
     help="how many samples to produce for each given prompt. A.k.a. batch size",
