@@ -37,7 +37,7 @@ DEFAULT_CKPT = "models/ldm/stable-diffusion-v1/model.ckpt"
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
-    "--prompt", type=str, nargs="?", default="a painting of a virus monster playing guitar", help="the prompt to render"
+    "--prompt", type=str, nargs="?", default="a painting of a virus monster playing guitar", help="the prompt to render" # 키워드
 )
 parser.add_argument("--outdir", type=str, nargs="?", help="dir to write results to", default="outputs/txt2img")
 parser.add_argument(
@@ -51,7 +51,7 @@ parser.add_argument(
     help="do not save individual samples. For speed measurements.",
 )
 parser.add_argument(
-    "--ddim_steps",
+    "--ddim_steps", # 이미지 steps
     type=int,
     default=30,
     help="number of ddim sampling steps",
@@ -75,13 +75,13 @@ parser.add_argument(
     help="sample this often",
 )
 parser.add_argument(
-    "--H",
+    "--H", # 이미지 높이
     type=int,
     default=512,
     help="image height, in pixel space",
 )
 parser.add_argument(
-    "--W",
+    "--W", # 이미지 너비
     type=int,
     default=512,
     help="image width, in pixel space",
@@ -99,7 +99,7 @@ parser.add_argument(
     help="downsampling factor",
 )
 parser.add_argument(
-    "--n_samples",
+    "--n_samples", # 이미지 샘플 갯수
     type=int,
     default=1,
     help="how many samples to produce for each given prompt. A.k.a. batch size",
