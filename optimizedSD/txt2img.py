@@ -53,7 +53,7 @@ parser.add_argument(
 parser.add_argument(
     "--ddim_steps", # 이미지 steps
     type=int,
-    default=30,
+    default=20,
     help="number of ddim sampling steps",
 )
 

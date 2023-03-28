@@ -1,10 +1,11 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import Union
+import json
 
 
 class GenerateImage(BaseModel):
-    prompt: str
+    keyword: str
     W: Union[int, None] = None
     H: Union[int, None] = None
     steps: Union[int, None] = None
@@ -13,16 +14,16 @@ class GenerateImage(BaseModel):
 
 prompt = APIRouter()
 
-@prompt.post('/txt2img/prompt')
+@prompt.post('/txt2img/keyword')
 async def get_prompt(image: GenerateImage):
     return image
 
-@prompt.post('/img2img/prompt')
+@prompt.post('/img2img/keyword')
 async def get_prompt(image: GenerateImage):
     return image
 
 
-@prompt.post('/inpaint/prompt')
+@prompt.post('/inpaint/keyword')
 async def get_prompt(image: GenerateImage):
     return image
 
