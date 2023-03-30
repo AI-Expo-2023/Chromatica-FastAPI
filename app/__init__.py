@@ -1,6 +1,8 @@
 from fastapi import APIRouter
-from app import prompt
+from app import generate
+from app import image
 
 api_router = APIRouter()
 
-api_router.include_router(prompt.prompt)
+api_router.include_router(generate.prompt)
+api_router.include_router(image.image_post)
