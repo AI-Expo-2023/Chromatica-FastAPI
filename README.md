@@ -38,3 +38,24 @@ FastAPI + Stable diffusion model
 | :card_file_box: | 데이터베이스 관련 수정 |
 | :loud_sound: | 로그 추가/수정 |
 | :see_no_evil: | .gitignore 추가/수정 |
+
+## Directory structure
+
+```
+├── main.py
+├── setup.py
+├── environment.yaml
+├── LICENSE
+│ 
+├── 📁 config
+├── 📁 app
+│ 	├── __init__.py
+│ 	├── image.py
+│	└── generate.py
+│
+├── 📁 ldm
+├── 📁 models
+├── 📁 optimizedSD
+│
+└── README.md
+```
