@@ -50,7 +50,6 @@ FastAPI + Stable diffusion model
 ├── 📁 config
 ├── 📁 app
 │ 	├── __init__.py
-│ 	├── image.py
 │	└── generate.py
 │
 ├── 📁 ldm
