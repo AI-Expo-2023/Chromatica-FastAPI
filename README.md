@@ -50,11 +50,19 @@ FastAPI + Stable diffusion model
 ├── 📁 config
 ├── 📁 app
 │ 	├── __init__.py
-│	└── generate.py
+│	  └── generate.py
 │
 ├── 📁 ldm
 ├── 📁 models
 ├── 📁 optimizedSD
+├── 📁 input
+│ 	├── 📁 img2img
+│	  └── 📁 inpaint
+│ 	    ├── 📁 base_image
+│	      └── 📁 mask_image
+├── 📁 output
+│ 	├── 📁 img2img
+│	  └── 📁 inpaint
 │
 └── README.md
 ```
