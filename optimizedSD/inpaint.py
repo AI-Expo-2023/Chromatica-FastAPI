@@ -33,12 +33,11 @@ def main(style, base_path, mask_path, prompt):
         image = pipe(prompt=prompt, image=init, mask_image=mask, strength=0.75).images[0]
 
     content = image
-
-    with open(os.path.join(path, filename), "w+b") as fp:
-        fp.write(content)
+    content.save(f"output/inpaint/{filename}","PNG")
 
     if style == 'original':
         pass
+
     elif style == 'black':
         imageb_w = cv.imread("./cat_on_bench.png", cv.IMREAD_GRAYSCALE)
         cv.imshow('black', imageb_w)
@@ -58,3 +57,5 @@ def main(style, base_path, mask_path, prompt):
         image_blue = cv.merge((b, b, r))
 
         cv.imwrite(f"/output/inpaint/{filename}.png", image_blue)
+
+    return 
