@@ -1,57 +1,67 @@
 from fastapi import APIRouter, status, UploadFile, File, Form
-from pydantic import BaseModel
 import subprocess as sub
+from googletrans import Translator
+from typing import IO
 import os
-import uuid
+import time
+from optimizedSD import inpaint
 
-
-# class GenerateImage(BaseModel):
-#     keyword: str
-#     W: int
-#     H: int
-#     steps: int
-#     format: str
-#     samples: int
-
+a = time.strftime("%Y-%m-%d-%H-%M-%S")
+translator = Translator()
 
 prompt = APIRouter()
 
-# @prompt.post('/txt2img/keyword', status_code=status.HTTP_200_OK)
-# async def get_prompt_txt2img(image: GenerateImage):
-#     cmd = ['python', './optimizedSD/txt2img.py', '--prompt', f'{image.keyword}', '--W', 
-#            f'{image.W}', '--H', f'{image.H}', '--ddim_steps', f'{image.steps}', '--format', f'{image.format}', '--n_samples', f'{image.samples}']
-#     sub.run(cmd)
-#     return image.keyword
+
+async def save_img2img_img(file: IO):
+    path = './input/img2img'
+    content = file.read()
+    filename = f"{str(a)}.png"
+    with open(os.path.join(path, filename), "w+b") as fp:
+        fp.write(content)
+    return f'{path}/{filename}'
+
+
+async def save_base_img(file: IO):
+    path = './input/inpaint/base_image'
+    content = file.read()
+    filename = f"{str(a)}.png"
+    with open(os.path.join(path, filename), "w+b") as fp:
+        fp.write(content)
+    return f'{path}/{filename}'
+
+
+async def save_mask_img(file: IO):
+    path = './input/inpaint/mask_image'
+    content = file.read()
+    filename = f"{str(a)}.png"
+    with open(os.path.join(path, filename), "w+b") as fp:
+        fp.write(content)
+    return f'{path}/{filename}'
 
 
 @prompt.post('/img2img/keyword', status_code=status.HTTP_200_OK)
 async def get_prompt_img2img(keyword: str = Form(), W: int = Form(), H: int = Form(),
                             steps: int = Form(), format: str = Form(),
                             samples: int = Form(), base_img: UploadFile = File()):
+    
+    base_path = save_img2img_img(base_img.file)
 
-    content = base_img.file.read()
-    filename = f"{str(uuid.uuid4())}.png"
-
-    with open(os.path.join('./input/img2img', filename), "w+b") as fp:
-        fp.write(content)
-
-    # cmd = ['python', './optimizedSD/img2img.py', '--prompt', f'{image.keyword}', '--W', 
-    #         f'{image.W}', '--H', f'{image.H}', '--ddim_steps', f'{image.steps}', '--format', 
-    #         f'{image.format}', '--n_samples', f'{image.samples}', '--init-img', f'./input/input1.png', '--turbo']
-    # sub.run(cmd)
+    cmd = ['python', './optimizedSD/img2img.py', '--prompt', f'{keyword}', '--W', 
+            f'{W}', '--H', f'{H}', '--ddim_steps', f'{steps}', '--format', 
+            f'{format}', '--n_samples', f'{samples}', '--init-img', f'{base_path}', '--turbo']
+    sub.run(cmd)
 
     return
 
 
 @prompt.post('/inpaint/keyword', status_code=status.HTTP_200_OK)
-async def get_prompt(base_img: UploadFile = File()):
+async def get_prompt(base_img: UploadFile = File(), mask_img: UploadFile = File(), keyword: str = Form(),
+                     steps: int = Form(), style : str = Form()):
     
-    content = base_img.file.read()
-    filename = f"{str(uuid.uuid4())}.png"
+    prompt = translator.translate(keyword, dest='en').text
 
-    with open(os.path.join('./input/inpaint', filename), "w+b") as fp:
-        fp.write(content)
+    base_path = await save_base_img(base_img.file)
+    mask_path = await save_mask_img(mask_img.file)
 
-    # cmd = ['python', './optimizedSD/inpaint.py']
-    # sub.run(cmd)
+    inpaint.main(style=style, base_path=base_path, mask_path=mask_path, prompt=prompt)
     return

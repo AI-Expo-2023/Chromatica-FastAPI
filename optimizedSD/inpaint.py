@@ -4,54 +4,58 @@ from PIL import Image
 import torch
 from diffusers import StableDiffusionInpaintPipeline
 import cv2 as cv
+import time
+import os
 
-a = 'black'
+a = time.strftime("%Y-%m-%d-%H-%M-%S")
+path = './output/inpaint'
+filename = f"{str(a)}.png"
 
-init_path = './input/dog1.png'
-mask_path = './input/dog2.png'
+def main(style, base_path, mask_path, prompt):
+    with open(base_path, 'rb') as f:
+        init_data = f.read()
 
-prompt = "a kungfu panda sitting on a bench"
-
-with open(init_path, 'rb') as f:
-    init_data = f.read()
-
-with open(mask_path, 'rb') as f:
-    mask_data = f.read()
+    with open(mask_path, 'rb') as f:
+        mask_data = f.read()
 
 
-init = Image.open(BytesIO(init_data))
-mask = Image.open(BytesIO(mask_data))
+    init = Image.open(BytesIO(init_data))
+    mask = Image.open(BytesIO(mask_data))
 
-device = "cuda"
-pipe = StableDiffusionInpaintPipeline.from_pretrained(
-    "CompVis/stable-diffusion-v1-4",
-    revision="fp16", 
-    torch_dtype=torch.float16
-).to(device)
+    device = "cuda"
+    pipe = StableDiffusionInpaintPipeline.from_pretrained(
+        "CompVis/stable-diffusion-v1-4",
+        revision="fp16", 
+        torch_dtype=torch.float16
+    ).to(device)
 
-with autocast("cuda"):
-    image = pipe(prompt=prompt, image=init, mask_image=mask, strength=0.75).images[0]
+    with autocast("cuda"):
+        image = pipe(prompt=prompt, image=init, mask_image=mask, strength=0.75).images[0]
 
-image.save("cat_on_bench.png")
+    content = image
+    content.save(f"output/inpaint/{filename}","PNG")
 
-if a == 'original':
-    pass
-elif a == 'black':
-    imageb_w = cv.imread("./cat_on_bench.png", cv.IMREAD_GRAYSCALE)
-    cv.imshow('black', imageb_w)
-    
-    cv.imwrite('output/inpaint/grayImage.png', imageb_w)
+    if style == 'original':
+        pass
 
-elif a == 'ruddy':
-    image1 = cv.imread("./cat_on_bench.png", cv.IMREAD_COLOR)
-    b, g, r = cv.split(image1)
-    image_ruddy = cv.merge((r, g, b))
+    elif style == 'black':
+        imageb_w = cv.imread("./cat_on_bench.png", cv.IMREAD_GRAYSCALE)
+        cv.imshow('black', imageb_w)
+        
+        cv.imwrite(f'/output/inpaint/{filename}.png', imageb_w)
 
-    cv.imwrite('output/inpaint/ruddyImage.png', image_ruddy)
+    elif style == 'ruddy':
+        image1 = cv.imread("./cat_on_bench.png", cv.IMREAD_COLOR)
+        b, g, r = cv.split(image1)
+        image_ruddy = cv.merge((r, g, b))
 
-elif a == 'blue':
-    image1 = cv.imread("./cat_on_bench.png", cv.IMREAD_COLOR)
-    b, g, r = cv.split(image1)
-    image_blue = cv.merge((b, b, r))
+        cv.imwrite(f"/output/inpaint/{filename}.png", image_ruddy)
 
-    cv.imwrite('output/inpaint/blueImage.png', image_blue)
+    elif style == 'blue':
+        image1 = cv.imread("./cat_on_bench.png", cv.IMREAD_COLOR)
+        b, g, r = cv.split(image1)
+        image_blue = cv.merge((b, b, r))
+
+        cv.imwrite(f"/output/inpaint/{filename}.png", image_blue)
+
+    return 
