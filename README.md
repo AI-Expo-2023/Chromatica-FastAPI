@@ -57,12 +57,12 @@ FastAPI + Stable diffusion model
 ├── 📁 optimizedSD
 ├── 📁 input
 │ 	├── 📁 img2img
-│	  └── 📁 inpaint
+│	 └── 📁 inpaint
 │ 	    ├── 📁 base_image
-│	      └── 📁 mask_image
+│	     └── 📁 mask_image
 ├── 📁 output
 │ 	├── 📁 img2img
-│	  └── 📁 inpaint
+│	 └── 📁 inpaint
 │
 └── README.md
 ```
