@@ -58,7 +58,7 @@ FastAPI + Stable diffusion model
 ├── 📁 input
 │ 	├── 📁 img2img
 │	└── 📁 inpaint
-│ 	  ├── 📁 base_image
+│ 	    ├── 📁 base_image
 │	    └── 📁 mask_image
 ├── 📁 output
 │ 	├── 📁 img2img
