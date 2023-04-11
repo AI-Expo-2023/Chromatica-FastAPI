@@ -2,7 +2,7 @@ from fastapi import FastAPI
 import uvicorn
 from app import api_router
 
-app = FastAPI()
+app = FastAPI(title='Chromatica APP', version='1.0.0')
 app.include_router(api_router)
 
 @app.get('/')
