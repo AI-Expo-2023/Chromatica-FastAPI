@@ -4,6 +4,7 @@ from googletrans import Translator
 from typing import IO
 import os
 import time
+from optimizedSD import inpaint
 
 a = time.strftime("%Y-%m-%d-%H-%M-%S")
 translator = Translator()
@@ -54,12 +55,13 @@ async def get_prompt_img2img(keyword: str = Form(), W: int = Form(), H: int = Fo
 
 
 @prompt.post('/inpaint/keyword', status_code=status.HTTP_200_OK)
-async def get_prompt(base_img: UploadFile = File(),mask_img: UploadFile = File(), keyword: str = translator.translate(Form(), dest='en').text,
+async def get_prompt(base_img: UploadFile = File(), mask_img: UploadFile = File(), keyword: str = Form(),
                      steps: int = Form(), style : str = Form()):
     
+    prompt = translator.translate(keyword, dest='en').text
+
     base_path = await save_base_img(base_img.file)
     mask_path = await save_mask_img(mask_img.file)
 
-    cmd = ['python', './optimizedSD/inpaint.py']
-    sub.run(cmd)
+    inpaint.main(style=style, base_path=base_path, mask_path=mask_path, prompt=prompt)
     return
