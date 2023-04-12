@@ -1,10 +1,10 @@
 from fastapi import APIRouter, status, UploadFile, File, Form
 from fastapi.responses import FileResponse
-import subprocess as sub
-from googletrans import Translator
-from typing import IO
-import os
-import time
+# import subprocess as sub
+# from googletrans import Translator
+# from typing import IO
+# import os
+# import time
 # from optimizedSD import inpaint
 
 # a = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -48,7 +48,7 @@ prompt = APIRouter()
 #     cmd = ['python', './optimizedSD/img2img.py', '--prompt', f'{keyword}', '--W', 
 #             f'{int(W)}', '--H', f'{int(H)}', '--ddim_steps', f'{int(steps)}', '--format', 
 #             f'{format}', '--n_samples', f'{int(samples)}', '--init-img', f'{base_path}', '--turbo']
-#     b = sub.run(cmd)
+#     sub.run(cmd)
 
 #     return {"message" : "이미지 생성 성공"}
 
@@ -67,14 +67,16 @@ prompt = APIRouter()
     
 #     return {"message" : "이미지 수정 성공"}
 
-b = ['./input/inpaint/base_image/2023-04-11-18-36-20.png', 
-     './input/inpaint/base_image/2023-04-11-18-36-20.png', 
-     './input/inpaint/base_image/2023-04-11-18-36-20.png', 
-     './input/inpaint/base_image/2023-04-11-18-36-20.png']
+b = ['./output/inpaint/2023-04-11-18-36-20.png', '', '', '']
+
 
 @prompt.get('/generated_img2img/{id}')
 async def get_image_inpainted(id : int):
-    return FileResponse(b[id-1])
+    image = b[id-1]
+    if image == '':
+        return
+    else:
+        return FileResponse(b[id-1])
 
 
 # @prompt.get('/generated_inpaint')
