@@ -33,29 +33,29 @@ def main(style, base_path, mask_path, prompt):
         image = pipe(prompt=prompt, image=init, mask_image=mask, strength=0.75).images[0]
 
     content = image
-    content.save(f"output/inpaint/{filename}","PNG")
+    content.save(f"{path}/{filename}","PNG")
 
     if style == 'original':
         pass
 
     elif style == 'black':
-        imageb_w = cv.imread("./cat_on_bench.png", cv.IMREAD_GRAYSCALE)
-        cv.imshow('black', imageb_w)
+        content = cv.imread(f"{path}/{filename}", cv.IMREAD_GRAYSCALE)
+        cv.imshow('black', content)
         
-        cv.imwrite(f'/output/inpaint/{filename}.png', imageb_w)
+        cv.imwrite(f'{path}/{filename}', content)
 
     elif style == 'ruddy':
-        image1 = cv.imread("./cat_on_bench.png", cv.IMREAD_COLOR)
-        b, g, r = cv.split(image1)
+        content = cv.imread(f"{path}/{filename}", cv.IMREAD_COLOR)
+        b, g, r = cv.split(content)
         image_ruddy = cv.merge((r, g, b))
 
-        cv.imwrite(f"/output/inpaint/{filename}.png", image_ruddy)
+        cv.imwrite(f"{path}/{filename}", image_ruddy)
 
     elif style == 'blue':
-        image1 = cv.imread("./cat_on_bench.png", cv.IMREAD_COLOR)
-        b, g, r = cv.split(image1)
+        content = cv.imread(f"{path}/{filename}", cv.IMREAD_COLOR)
+        b, g, r = cv.split(content)
         image_blue = cv.merge((b, b, r))
 
-        cv.imwrite(f"/output/inpaint/{filename}.png", image_blue)
+        cv.imwrite(f"{path}/{filename}", image_blue)
 
-    return 
+    return f"{path}/{filename}"

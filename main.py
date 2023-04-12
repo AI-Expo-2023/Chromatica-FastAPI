@@ -7,8 +7,7 @@ app.include_router(api_router)
 
 @app.get('/')
 async def test():
-    return "Hello, World!"
-
+    return 'Server is Working!'
 
 if __name__ == '__main__':
     uvicorn.run("main:app", host='0.0.0.0', port=3333, reload=True)
