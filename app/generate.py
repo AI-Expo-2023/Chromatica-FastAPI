@@ -77,6 +77,6 @@ async def get_image_inpainted(id : int):
     return FileResponse(b[id-1])
 
 
-# @prompt.get('/generated_inpainted')
+# @prompt.get('/generated_inpaint')
 # async def get_image_img2img():
 #     return FileResponse(c)
