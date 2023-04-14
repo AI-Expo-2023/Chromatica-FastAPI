@@ -1,4 +1,4 @@
-import argparse, os, re
+import argparse, os
 import torch
 import numpy as np
 from random import randint
@@ -7,16 +7,14 @@ from PIL import Image
 from tqdm import tqdm, trange
 from itertools import islice
 from einops import rearrange
-from torchvision.utils import make_grid
 import time
 from pytorch_lightning import seed_everything
 from torch import autocast
-from contextlib import contextmanager, nullcontext
+from contextlib import nullcontext
 from einops import rearrange, repeat
 from ldm.util import instantiate_from_config
-from optimUtils import split_weighted_subprompts, logger
+from optimUtils import split_weighted_subprompts
 from transformers import logging
-import pandas as pd
 import uuid
 
 logging.set_verbosity_error()
@@ -338,7 +336,7 @@ with torch.no_grad():
                     Image.fromarray(x_sample.astype(np.uint8)).save(
                         os.path.join(sample_path, f"{b}" + f".{opt.format}")
                     )
-                    image_list[cnt] = str(sample_path, f"{b}" + f".{opt.format}")
+                    image_list[cnt] = sample_path, f"{b}" + f".{opt.format}"
                     
                     seeds += str(opt.seed) + ","
                     cnt += 1
@@ -353,4 +351,3 @@ with torch.no_grad():
 
                 del samples_ddim
                 print("memory_final = ", torch.cuda.memory_allocated(device=opt.device) / 1e6)
-
