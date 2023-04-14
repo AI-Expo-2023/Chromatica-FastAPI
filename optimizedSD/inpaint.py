@@ -7,11 +7,11 @@ import cv2 as cv
 import time
 import os
 
-a = time.strftime("%Y-%m-%d-%H-%M-%S")
-path = './output/inpaint'
-filename = f"{str(a)}.png"
-
 def main(style, base_path, mask_path, prompt):
+    a = time.strftime("%Y-%m-%d-%H-%M-%S")
+    path = './output/inpaint'
+    filename = f"{str(a)}.png"
+    
     with open(base_path, 'rb') as f:
         init_data = f.read()
 
