@@ -5,12 +5,23 @@ import torch
 from diffusers import StableDiffusionInpaintPipeline
 import cv2 as cv
 import time
-import os
+import sqlite3
+
+conn = sqlite3.connect('./database/ImageURL.db')
+conn.row_factory = lambda cursor, row: row[0]
+c = conn.cursor()
+
 
 def main(style, base_path, mask_path, prompt):
     a = time.strftime("%Y-%m-%d-%H-%M-%S")
     path = './output/inpaint'
     filename = f"{str(a)}.png"
+
+    img_base = Image.open(f'{base_path}').convert('RGB')
+    img_mask = Image.open(f'{mask_path}').convert('RGB')
+    img_base.save(f'{base_path}', 'png')
+    img_mask.save(f'{mask_path}', 'png')
+
     
     with open(base_path, 'rb') as f:
         init_data = f.read()
@@ -18,9 +29,9 @@ def main(style, base_path, mask_path, prompt):
     with open(mask_path, 'rb') as f:
         mask_data = f.read()
 
-
     init = Image.open(BytesIO(init_data))
     mask = Image.open(BytesIO(mask_data))
+
 
     device = "cuda"
     pipe = StableDiffusionInpaintPipeline.from_pretrained(
@@ -40,22 +51,23 @@ def main(style, base_path, mask_path, prompt):
 
     elif style == 'black':
         content = cv.imread(f"{path}/{filename}", cv.IMREAD_GRAYSCALE)
-        cv.imshow('black', content)
-        
         cv.imwrite(f'{path}/{filename}', content)
 
-    elif style == 'ruddy':
+    elif style == 'blue':
         content = cv.imread(f"{path}/{filename}", cv.IMREAD_COLOR)
         b, g, r = cv.split(content)
         image_ruddy = cv.merge((r, g, b))
 
         cv.imwrite(f"{path}/{filename}", image_ruddy)
 
-    elif style == 'blue':
+    elif style == 'ruddy':
         content = cv.imread(f"{path}/{filename}", cv.IMREAD_COLOR)
         b, g, r = cv.split(content)
         image_blue = cv.merge((b, b, r))
 
         cv.imwrite(f"{path}/{filename}", image_blue)
-
-    return f"{path}/{filename}"
+    
+    conn.execute('INSERT INTO images (path) VALUES (?)', ((f'{path}/{filename}'),))
+    conn.commit()
+    
+    return a
