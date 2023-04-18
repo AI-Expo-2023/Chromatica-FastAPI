@@ -16,11 +16,13 @@ from ldm.util import instantiate_from_config
 from optimUtils import split_weighted_subprompts
 from transformers import logging
 import uuid
+import sqlite3
+
+conn = sqlite3.connect('./database/ImageURL.db')
 
 logging.set_verbosity_error()
 
 a = time.strftime("%Y-%m-%d-%H-%M-%S")
-image_list = ['', '', '', '']
 cnt = 0
 
 def chunk(it, size):
@@ -336,12 +338,14 @@ with torch.no_grad():
                     Image.fromarray(x_sample.astype(np.uint8)).save(
                         os.path.join(sample_path, f"{b}" + f".{opt.format}")
                     )
-                    image_list[cnt] = sample_path, f"{b}" + f".{opt.format}"
+                    conn.execute('INSERT INTO images (path) VALUES (?)', (f"{sample_path}/{b}.{opt.format}",))
                     
                     seeds += str(opt.seed) + ","
                     cnt += 1
                     opt.seed += 1
                     base_count += 1
+
+                conn.commit()
 
                 if opt.device != "cpu":
                     mem = torch.cuda.memory_allocated(device=opt.device) / 1e6
