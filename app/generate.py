@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, File, Form, HTTPException
+from fastapi import APIRouter, status, Form, HTTPException
 from fastapi.responses import FileResponse
 import subprocess as sub
 from googletrans import Translator
@@ -13,9 +13,6 @@ c = conn.cursor()
 
 translator = Translator()
 prompt = APIRouter()
-
-global a
-global b
 
 async def save_img2img_img(file):
     a = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -64,8 +61,7 @@ async def get_prompt_img2img(keyword: str = Form(), W: str = Form(), H: str = Fo
                             steps: str = Form(), format: str = Form(),
                             samples: str = Form(), base_img: str = Form()):
     
-    global a
-    a = ['', '', '', '']
+    id_list = [0, 0, 0, 0]
 
     prompt = translator.translate(keyword, dest='en').text
     base_path = await save_img2img_img(base_img)
@@ -76,10 +72,12 @@ async def get_prompt_img2img(keyword: str = Form(), W: str = Form(), H: str = Fo
     sub.run(cmd)
 
     for i in range(int(samples)):
-        a[i] = str(c.execute(f'SELECT path FROM images WHERE id = (SELECT (MAX(id) - {i}) from images)').fetchall())
-        print(a[i])
+        path = str(c.execute(f'SELECT path FROM images WHERE id = (SELECT (MAX(id) - {i}) from images)').fetchall())
+        id_list[i] = str(c.execute(f'SELECT id from images where path=(?)', (path.replace("['", "").replace("']", ""),)).fetchall())
+        id_list[i] = id_list[i].replace('[', '').replace(']', '')
     
-    return ['http://192.168.0.113:3333/generated_img2img/1', 'http://192.168.0.113:3333/generated_img2img/2', 'http://192.168.0.113:3333/generated_img2img/3', 'http://192.168.0.113:3333/generated_img2img/4']
+    return [f'http://192.168.0.113:3333/generated_img2img/{int(id_list[0])}', f'http://192.168.0.113:3333/generated_img2img/{int(id_list[1])}',
+            f'http://192.168.0.113:3333/generated_img2img/{int(id_list[2])}', f'http://192.168.0.113:3333/generated_img2img/{int(id_list[3])}']
 
 
 @prompt.post('/inpaint/keyword', status_code=status.HTTP_200_OK)
@@ -87,30 +85,34 @@ async def get_prompt(base_img: str = Form(), mask_img: str = Form(),
                      keyword: str = Form(), steps: str = Form(), style : str = Form(), W: str = Form(), H: str = Form()):
     
     global b
-
+    global inpaint_id
     prompt = translator.translate(keyword, dest='en').text
 
     base_path = await save_base_img(base_img)
     mask_path = await save_mask_img(mask_img)
 
-    inpaint.main(style=style, base_path=base_path, mask_path=mask_path, prompt=prompt)
+    inpaint.main(style=style, base_path=base_path, mask_path=mask_path, prompt=prompt, W=W, H=H)
 
-    b = c.execute(f'SELECT * FROM images WHERE path = (SELECT MAX(id) FROM images)').fetchall()
-    
-    return 'http://192.168.0.113:3333/generated_inpaint'
+    b = str(c.execute(f'SELECT path FROM images WHERE id = (SELECT MAX(id) from images)').fetchall())
+    inpaint_id = str(c.execute(f'SELECT id from images where path=(?)', (b.replace("['", "").replace("']", ""),)).fetchall())
+    inpaint_id = inpaint_id.replace('[', '').replace(']', '')
+
+    return f'http://192.168.0.113:3333/generated_inpaint/{int(inpaint_id)}'
 
 
 @prompt.get('/generated_img2img/{id}')
 async def get_image_img2img(id : int):
     try:
-        if a[id-1] == '':
-            return
+        if id == 0:
+            raise HTTPException(status_code=404, detail="Image not found")
         else:
-            return FileResponse(str(a[id-1]).replace("[", '').replace(']', '').replace("'", ""))
+            a = c.execute(f'SELECT path FROM images WHERE id = (SELECT {id} from images)').fetchall()
+            return FileResponse(str(a).replace("[", '').replace(']', '').replace("'", ""))
     except:
-        return
-    
+        raise HTTPException(status_code=404, detail="Image not found")
 
-@prompt.get('/generated_inpaint')
-async def get_image_inpainted():
-    return FileResponse(b)
+
+@prompt.get('/generated_inpaint/{id}')
+async def get_image_inpainted(id : int):
+    a = c.execute(f'SELECT path FROM images WHERE id = (SELECT {id} from images)').fetchall()
+    return FileResponse(str(a).replace("[", '').replace(']', '').replace("'", ""))
