@@ -21,6 +21,7 @@ import sqlite3
 conn = sqlite3.connect('./database/ImageURL.db')
 
 logging.set_verbosity_error()
+torch.cuda.empty_cache()
 
 a = time.strftime("%Y-%m-%d-%H-%M-%S")
 cnt = 0
