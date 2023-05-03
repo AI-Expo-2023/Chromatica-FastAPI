@@ -41,14 +41,14 @@ def main(style, base_path, mask_path, prompt, W, H):
             torch_dtype=torch.float16
         ).to(device)
 
+        pipe.enable_attention_slicing()
         pipe.safety_checker = lambda images, clip_input: (images, False)
         
         with autocast("cuda"):
-            image = pipe(prompt=prompt, image=init, mask_image=mask, strength=0.75).images[0]
+            image = pipe(prompt=prompt, image=init, mask_image=mask, strength=0.75, num_images_per_prompt=1).images[0]
 
         content = image
         content.save(f"{path}/{filename}","PNG")
-        del image
 
         if style == 'original':
             pass
@@ -73,5 +73,4 @@ def main(style, base_path, mask_path, prompt, W, H):
         
         conn.execute('INSERT INTO images (path) VALUES (?)', ((f'{path}/{filename}'),))
         conn.commit()
-        
         return f"{path}/{filename}"
